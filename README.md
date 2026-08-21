@@ -376,3 +376,57 @@ mount -o "noatime,compress=zstd,discard=async,subvol=@snapshots" /dev/sda2 /mnt/
 mount -o "noatime,compress=zstd,discard=async,subvol=@var_log" /dev/sda2 /mnt/var/log
 mount --mkdir /dev/sda1 /mnt/boot
 ```
+
+###### See also:
+
+[Device mapper - Wikipedia](https://en.wikipedia.org/wiki/Device_mapper)
+
+[dm-crypt - Wikipedia](https://en.wikipedia.org/wiki/Dm-crypt)
+
+[Partitioning - ArchWiki](https://wiki.archlinux.org/title/Partitioning)
+
+[LVM - ArchWiki](https://wiki.archlinux.org/title/LVM)
+
+[Logical volume management guide - Tutonics](https://tutonics.com/articles/logical-volume-management-guide/)
+
+[Subvolumes — BTRFS documentation](https://btrfs.readthedocs.io/en/latest/Subvolumes.html)
+
+
+### fstab and crypttab
+The function of `/etc/fstab` is to specify the filesystems that should be mounted during startup and the mount points on which they are to be mounted, along with any options that might be necessary.
+
+Each of the filesystem line entries contains six columns of data.
+
+The first column is an **identifier** that identifies the filesystem so that the startup process knows which filesystem to work with in this line. There are multiple ways to identify the filesystem: **UUID**, or Universal Unique IDentifier.
+
+This is an ID that is guaranteed to be unique so that no other partition can have the same one. The UUID is generated when the filesystem is created and is located in the *superblock* for the partition.
+
+```bash
+blkid /dev/sda1 # You can see the UUID of a partition
+```
+
+You can also identifie a partition using the path to the device special files in the /dev directory. 
+
+Another option would be to use the labels when formatting the filesystem, such as `mkfs.btrfs -L DISK /dev/vg0/root`
+
+```bash
+UUID=rsti7bodb9-9d11-tnet /boot vfat defaults 0 2
+/dev/mapper/vg0-root    /home   btrfs rw,noatime,compress=zstd:3,ssd,discard=async,subvol=@home 0 1
+LABEL=TEMP /tmp ext4 defaults 0 0
+```
+The filesystem label is also stored in the partition *superblock*.
+
+The second column in the `/etc/fstab `file is the mountpoint on which the filesystem identified by the data in column 1 is mounted. These mountpoints are empty directories to which the filesystem is mounted, if there is data in those directories it won't be available until the partition is unmounted.
+
+The third column specifies the filesystem type such as btrfs, ext4, NTFS, etc.
+
+The fourth column of data in the fstab file is a list of options. The `mount` command has many options, and each option has a default setting.
+As an example an option could be: the `noauto` option which means that this filesystem is not automatically mounted during the Linux startup. It can be manually mounted and unmounted after startup. This is ideal for a removable device like a USB memory stick.
+
+> [!CAUTION]
+> If a partition is listed in `/etc/fstab` and is not available during startup, the system may fail to boot unless the `nofail` option is specified in the fstab entry.
+
+The last two columns are of numbers. The first number is used by the `dump` command, which is one possible
+option for making backups. The `dump` command is rarely used today for backups, so this column is usually ignored. If by some chance someone is still using `dump` to make backups, a 1 in this column means to back up this entire filesystem, and a 0 means to skip this filesystem.
+
+The last column is also numeric. It specifies the sequence in which `fsck` is run against filesystems during startup. Zero (0) means do not run `fsck` on the filesystem. One (1) means to run `fsck` on this filesystem first. The root partition should always checked first.
