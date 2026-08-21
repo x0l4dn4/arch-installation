@@ -192,7 +192,7 @@ timedatectl set-timezone America/Los_Angeles
 When enabled, set-ntp true enables and starts the first available network-time synchronization service. When disabled, it stops and disables recognized time-sync services.
 
 
-See also:  
+###### See also:  
 
 [systemd-timesyncd.service(8) - Linux manual page](https://man7.org/linux/man-pages/man8/systemd-timesyncd.service.8.html)
 
@@ -201,3 +201,137 @@ See also:
 [David Both - systemd for Linux SysAdmins](https://link.springer.com/book/10.1007/979-8-8688-1328-3)
 
 
+## Disk partitioning
+
+**todo: Understand LVM, btrfs and its snapshots and subvolumes. Also crypttab**
+
+The minimum physical storage unit of a hard disk drive (HDD) is a sector.
+The solid state drive (SSD) equivalent is a page.
+
+
+Software and documentation may sometimes refer to "sectors" and "blocks" interchangeably, regardless of the storage type.
+
+#### EFI partition
+
+The EFI system partition (also called ESP) is an OS-independent partition formatted as FAT that serves as the storage location for UEFI boot loaders, applications, and drivers executed by the UEFI firmware. It is mandatory for UEFI booting.
+
+An ESP contains the boot loaders or kernel images of installed operating systems (which are typically contained in other partitions), device driver files for hardware devices present in a computer and used by the firmware at boot time, system utility programs that are intended to be run before an operating system is booted, and data files such as error logs.
+
+> The EFI system partition must be a physical partition in the main partition table of the disk, not under LVM or software RAID etc.
+
+
+UEFI provides *backward compatibility* with legacy systems by reserving the first block (sector) of the partition for compatibility code, effectively creating a legacy boot sector. On legacy BIOS-based systems, the first sector of a partition is loaded into memory, and execution is transferred to this code. UEFI firmware does not execute the code in the MBR, except when booting in legacy BIOS mode through the Compatibility Support Module (CSM)
+
+##### Partition and mounting
+
+`fdisk`: Create a partition and use the t command to change its partition type to EFI System using the alias **uefi**.
+
+See also:
+
+[Unified Extensible Firmware Interface - ArchWiki](https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#See_also)
+
+[Plumbing UEFI into Linux - YouTube](https://web.archive.org/web/20210721150713/https://www.youtube.com/watch?v=ehs_7I8qMm0)
+
+
+#### Encrypt the partition
+
+- Device mapper 
+
+Framework provided by the Linux kernel, used to map physical block devices to higher level virtual block devices.
+
+- DM-Crypt
+
+A target used with device mapper that provides transparent encryption. Allows us to create a virtual block device and have all data be encrypted on the fly before being committed to disk
+and can decrypt in the same way for reads.
+
+- Lucks
+
+Linux Unified Key Setup provides an efficient user-friendly way to store and manage keys. Without LUCKS, DM-Crypt can be more cumbersome and error prone.
+
+
+> You first create the encrypted volume, then open the volume, format the unlocked volume and mount it.
+
+
+```bash
+cryptsetup --type luks2 -y -v luksFormat /dev/sda1
+```
+
+Specifying --type luks2 is optional on current `cryptsetup` versions because LUKS2 is normally the default, but it makes the intended format unambiguous
+
+| Part       | Meaning                                                                                        |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| cryptsetup | Tool that configures encrypted block devices using dm-crypt/LUKS                               |
+| -y         | Ask you to enter the new passphrase twice, to catch typos                                      |
+| -v         | Verbose mode: prints extra status/progress information                                         |
+| luksFormat | Writes a LUKS header to the target device and creates the initial passphrase entry (keyslot 0) |
+| /dev/sda1  | The target partition to turn into a LUKS container                                             |
+
+
+> This command does not yet give you a usable filesystem. It produces an encrypted container. You then unlock it with a mapper name.
+
+
+```bash
+sudo cryptsetup open /dev/sda1 myvol
+```
+
+That creates the decrypted block device in `/dev/mapper/myvol`
+
+Now you can either create a filesystem directly on it, for example `mkfs.ext4 /dev/mapper/myvol; or
+
+make it an LVM physical volume and create separate root and swap logical volumes inside it.
+
+##### LVM setup
+
+
+create an LVM physical volume and volume group:
+
+```bash
+sudo pvcreate /dev/mapper/myvol
+sudo vgcreate vg0 /dev/mapper/myvol
+```
+
+Then create logical volumes for swap and root. Example: 8 GiB swap and all remaining space for root:
+
+
+```bash
+sudo lvcreate -L 8G -n swap vg0
+sudo lvcreate -l 100%FREE -n root vg0
+```
+
+You will get devices similar to:
+
+```bash
+/dev/vg0/root
+/dev/vg0/swap
+```
+
+Now create the filesystem and swap area
+
+```bash
+sudo mkfs.ext4 /dev/vg0/root
+sudo mkswap /dev/vg0/swap
+```
+
+Mount and enable them during the installation
+
+```bash
+sudo mount /dev/vg0/root /mnt
+sudo swapon /dev/vg0/swap
+```
+
+
+Then  `crypttab` — Configuration for encrypted block devices
+
+btrfs options in fstab
+
+
+| Option          | Recommendation           | Reason                                                                                                                                                                                                   |
+| --------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| noatime         | Yes                      | Stops writes that only update file access timestamps. This can reduce metadata writes, particularly useful with snapshots. btrfs                                                                         |
+| compress=zstd:3 | Yes                      | Transparent Zstandard compression at its default level. It generally offers a strong space-saving/speed balance. Btrfs skips files when compression would not help. wiki.archlinux+1                     |
+| discard=async   | Yes, for SSD/NVMe        | Queues and batches TRIM rather than issuing synchronous discards, avoiding the latency cost of synchronous discard. Modern Btrfs enables asynchronous discard by default when supported. man.archlinux+1 |
+| rw              | Optional                 | Read-write is already the normal default; including it is harmless but unnecessary.                                                                                                                      |
+| subvol=@        | Yes, if using subvolumes | Tells Btrfs which subvolume to mount as /. It is not a performance setting.                                                                                                                              |
+
+
+##### Further reading
