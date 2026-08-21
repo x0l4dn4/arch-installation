@@ -190,7 +190,7 @@ When enabled, set-ntp true enables and starts the first available network-time s
 
 [Synchronize time using timedatectl and timesyncd - Ubuntu Server documentation](https://ubuntu.com/server/docs/how-to/networking/timedatectl-and-timesyncd/)
 
-[David Both - systemd for Linux SysAdmins](https://link.springer.com/book/10.1007/979-8-8688-1328-3)
+[David Both - systemd for Linux SysAdmins - Chapter 6 Control Your Computer Time and Date with systemd](https://link.springer.com/book/10.1007/979-8-8688-1328-3)
 
 
 ## Disk partitioning
@@ -430,3 +430,33 @@ The last two columns are of numbers. The first number is used by the `dump` comm
 option for making backups. The `dump` command is rarely used today for backups, so this column is usually ignored. If by some chance someone is still using `dump` to make backups, a 1 in this column means to back up this entire filesystem, and a 0 means to skip this filesystem.
 
 The last column is also numeric. It specifies the sequence in which `fsck` is run against filesystems during startup. Zero (0) means do not run `fsck` on the filesystem. One (1) means to run `fsck` on this filesystem first. The root partition should always checked first.
+
+After you have mounted your partitions you can automatically generate a fstab file with the options of the currently mounted filesystems using the `genfstab` command.
+
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+The `/etc/crypttab` (encrypted device table) file is similar to the `fstab` file and contains a list of encrypted devices to be unlocked during system boot up.
+
+crypttab is read before fstab, so that encrypted devices can be unlocked before the file system inside is mounted.
+
+If you want to mount an encrypted drive at boot time, enter the device's UUID in `/etc/crypttab`. You get the UUID (partition) by using the command `lsblk -f` and adding it to crypttab in the form:
+
+```bash
+volume-name UUID=1f958855-a269-458a-8na2-22a45ei65431  none  timeout=200
+# The first 2 fields are mandatory, the remaining two are optional.
+```
+
+The `volume-name` contains the name of the resulting volume with decrypted data below /dev/mapper
+The third field you can specify a key to unlock the device, if  `none` or `-` is present, the password has to be manually entered during system boot.
+
+The last field is for the options separated by commas, refer to the manual to see all the possible options. In this case, `timeout` specifies the timeout for querying for a password. If no unit is specified, seconds is used.
+
+###### See also:
+
+[fstab - Wikipedia](https://en.wikipedia.org/wiki/Fstab)
+[fstab - ArchWiki](https://wiki.archlinux.org/title/Fstab)
+[dm-crypt/System configuration - ArchWiki](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#Mounting_at_boot_time)
+[crypttab(5) - Linux manual page](https://www.man7.org/linux/man-pages/man5/crypttab.5.html)
+[systemd-cryptsetup-generator(8) — Arch manual pages](https://man.archlinux.org/man/systemd-cryptsetup-generator.8)

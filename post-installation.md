@@ -67,8 +67,6 @@ sudo resolvectl domain enp3s0 '~.'
 
 See also:
 
-[David Both - systemd for Linux SysAdmins](https://link.springer.com/book/10.1007/979-8-8688-1328-3)
+[David Both - systemd for Linux SysAdmins - Chapter 12 Using systemd-resolved Name Service](https://link.springer.com/book/10.1007/979-8-8688-1328-3)
 
 [systemd.service — Service unit configuration](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html)
-
-
