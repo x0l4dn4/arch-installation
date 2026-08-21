@@ -60,9 +60,6 @@ setfont ter-132b
 ```
 
 
-
-
-
 ###### See also:
 
 
@@ -117,7 +114,10 @@ iwctl
 ###### See also:
 
 [iwd - ArchWiki](https://wiki.archlinux.org/title/Iwd#iwctl)
+
 [gettingstarted with iwd](https://archive.kernel.org/oldwiki/iwd.wiki.kernel.org/gettingstarted.html)
+
+
 
 
 
