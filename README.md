@@ -11,49 +11,35 @@ For a post-installation guide see: [arch-installation/post-installation.md](http
 todo:
 - [ ] Create a canvas and separate each header 2 into articles.
 - [ ] Create an index.
+- [ ] Create a web-version.
 
 
 ## Keyboard and fonts
 
+todo:
+- [ ] Add what is locale.
 
-
-`localectl` controls the system **locale** and keyboard layout settings.
-
-The default console keymap is en-US.
-
-
-
-You can list the available layouts with
-
-
+`localectl` controls the system **locale** and keyboard layout settings. The default console keymap is `en-US`.
 
 ```bash
 
-localectl list-keymaps
+localectl list-keymaps # List the available keymaps.
 
 ```
-
 
 
 To set the keyboard layout, pass its name to `loadkeys`.
 
-
-
 ```bash
 
-loadkeys de-latin1
+loadkeys dvorak-ca-fr
 
 ```
-
-
 
 #### Console fonts
 
 
-
 Console fonts are located in `/usr/share/kbd/consolefonts/ `and can likewise be set with `setfont` omitting the path and file extension.
-
-
 
 ```bash
 
@@ -61,9 +47,7 @@ setfont ter-132b
 
 ```
 
-
 ###### See also:
-
 
 
 [localectl(1) - Linux manual page](https://man7.org/linux/man-pages/man1/localectl.1.html)
@@ -83,7 +67,7 @@ todo:
 
 Wi-Fi—authenticate to the wireless network using `iwctl`.
 
-`iwd` automatically stores network passphrases in the `/var/lib/iwd` directory and uses them to *auto-connect* in the future. 
+`iwd` automatically stores network passphrases in the `/var/lib/iwd/ssid.psk` directory and uses them to *auto-connect* in the future. 
 
 ```bash
 iwctl
@@ -118,7 +102,7 @@ iwctl
 
 [iwd - ArchWiki](https://wiki.archlinux.org/title/Iwd#iwctl)
 
-[gettingstarted with iwd](https://archive.kernel.org/oldwiki/iwd.wiki.kernel.org/gettingstarted.html)
+[Getting started with iwd](https://archive.kernel.org/oldwiki/iwd.wiki.kernel.org/gettingstarted.html)
 
 
 ## Manage time
@@ -127,11 +111,14 @@ todo:
 - [ ] Really understand about stratum and how can date can affect TLS certificates.
 
 
-*This is quite verbose, may I move it to the post-installation?.*
+~~This is quite verbose, may I move it to the post-installation?.~~
 
-The live system needs accurate time to prevent package signature verification failures and TLS certificate errors. The `systemd-timesyncd` service is enabled by default in the live environment and time will be synchronized automatically once a connection to the internet is established.
+> [!IMPORTANT]
+> The live system needs accurate time to prevent package signature verification failures and TLS certificate errors.
 
-Use `timedatectl`(1) to ensure the system clock is synchronized:
+ The `systemd-timesyncd` service is enabled by default in the live environment and time will be synchronized automatically once a connection to the internet is established.
+
+Use `timedatectl` to ensure the system clock is synchronized:
 
 
 Linux hosts have two times to consider: **system time and RTC time**. RTC stands for *real-time clock*, which is a name for the system hardware clock.
@@ -149,6 +136,10 @@ The system time is the time known by the operating system. It is the time you se
 ### NTP
 
 `NTP` is the *Network Time Protocol* that is used by computers worldwide to **synchronize their times** with Internet standard reference clocks via a hierarchy of NTP servers.
+
+```bash
+timedatectl set-ntp true
+```
 
 #### NTP Server Hierarchy
 
@@ -179,7 +170,7 @@ Set the time zone for the computer. Usually, you set a computer’s time zone du
 
 ```bash
 timedatectl list-timezones | column
-timedatectl set-timezone America/Los_Angeles
+timedatectl set-timezone Europe/Prague
 ```
 
 
@@ -227,7 +218,7 @@ UEFI provides *backward compatibility* with legacy systems by reserving the firs
 
 ##### Partition and mounting
 
-`fdisk`: Create a partition and use the t command to change its partition type to EFI System using the alias **uefi**.
+`fdisk`: Create a partition and use the `t` command to change its partition type to EFI System using the alias **uefi**.
 
 ###### See also:
 
@@ -275,7 +266,7 @@ Specifying --type luks2 is optional on current `cryptsetup` versions because LUK
 
 
 ```bash
-sudo cryptsetup open /dev/sda1 myvol
+cryptsetup open /dev/sda1 myvol
 ```
 
 That creates the decrypted block device in `/dev/mapper/myvol`
@@ -290,16 +281,16 @@ make it an LVM physical volume and create separate root and swap logical volumes
 create an LVM physical volume and volume group:
 
 ```bash
-sudo pvcreate /dev/mapper/myvol
-sudo vgcreate vg0 /dev/mapper/myvol
+pvcreate /dev/mapper/myvol
+vgcreate vg0 /dev/mapper/myvol
 ```
 
 Then create logical volumes for swap and root. Example: 8 GiB swap and all remaining space for root:
 
 
 ```bash
-sudo lvcreate -L 8G -n swap vg0
-sudo lvcreate -l 100%FREE -n root vg0
+lvcreate -L 8G -n swap vg0
+lvcreate -l 100%FREE -n root vg0
 ```
 
 You will get devices similar to:
@@ -312,15 +303,16 @@ You will get devices similar to:
 Now create the filesystem and swap area
 
 ```bash
-sudo mkfs.ext4 /dev/vg0/root
-sudo mkswap /dev/vg0/swap
+mkfs.btrfs /dev/vg0/root
+mkswap /dev/vg0/swap
+mkfs.fat -F32 /dev/sda1 # The EFI partition you created previously.
 ```
 
 Mount and enable them during the installation
 
 ```bash
-sudo mount /dev/vg0/root /mnt
-sudo swapon /dev/vg0/swap
+mount /dev/vg0/root /mnt
+swapon /dev/vg0/swap
 ```
 
 
@@ -357,3 +349,30 @@ Furthermore, **snapshots in Btrfs are simply a special type of subvolume**. Mana
 
 > [!TIP]
 > btrfs subcommands can be abbreviated to any unique prefix. For example, `btrfs filesystem usage` is also accessible as `btrfs f u`.
+
+To create the subvolumes the btrfs partition must be mounted.
+
+```bash
+mount /dev/sda2 /mnt
+```
+
+Then, create the desired subvolumes.
+
+```bash
+btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@snapshots
+btrfs subvolume create /mnt/@var_log
+```
+
+Umount and then mount each subvolume.
+
+```bash
+umount /mnt
+mount -o "noatime,compress=zstd,discard=async,subvol=@" /dev/sda2 /mnt
+mkdir -p /mnt/{home,.snapshots,var/log}
+mount -o "noatime,compress=zstd,discard=async,subvol=@home" /dev/sda2 /mnt/home
+mount -o "noatime,compress=zstd,discard=async,subvol=@snapshots" /dev/sda2 /mnt/.snapshots
+mount -o "noatime,compress=zstd,discard=async,subvol=@var_log" /dev/sda2 /mnt/var/log
+mount --mkdir /dev/sda1 /mnt/boot
+```
