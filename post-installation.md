@@ -1,7 +1,10 @@
-**todo: Getting BlackArch repos**
 
-**todo: Setting manual IP and DNS servers**
+> [!WARNING]
+> This guide is currently a draft, not a complete guide.
 
+todo:
+- [ ] Getting BlackArch repos
+- [ ] Setting manual IP and DNS servers
 
 
 ```bash
@@ -36,6 +39,7 @@ Look at the *hosts* entry. The first entry is “**files**” which means that t
 
 If a match is not found, the resolver moves on to the next entry which is "**myhostname**." This provides *name resolution for the locally configured system hostname* as contained in the `$HOSTNAME` environment variable.
 
+> [!IMPORTANT]
 > Because all of these entries are sequence-sensitive, if an entry is found for a hostname in the `/etc/hosts` database, that takes precedent over any other, later entries
 
 

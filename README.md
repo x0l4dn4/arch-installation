@@ -4,12 +4,13 @@ Arch installation guide for a working environment focus in cybersecurity Encrypt
 
 For a post-installation guide see: [arch-installation/post-installation.md](https://github.com/x0l4dn4/arch-installation/blob/main/post-installation.md)
 
+> [!WARNING]
 > This guide is currently a draft, not a complete guide.
 
 
-**todo: Create a canvas and separate each header 2 into articles.**
-
-**todo: Create an index**
+todo:
+- [ ] Create a canvas and separate each header 2 into articles.
+- [ ] Create an index.
 
 
 ## Keyboard and fonts
@@ -77,7 +78,8 @@ setfont ter-132b
 ## Connect to the Internet
 
 
-**todo: How to configure static IP address and DNS servers post-installation**
+todo:
+- [ ] How to configure static IP address and DNS servers post-installation
 
 Wi-Fi—authenticate to the wireless network using `iwctl`.
 
@@ -121,7 +123,9 @@ iwctl
 
 ## Manage time
 
-**todo: Really understand about stratum and how can date can affect TLS certifcates.**
+todo:
+- [ ] Really understand about stratum and how can date can affect TLS certificates.
+
 
 *This is quite verbose, may I move it to the post-installation?.*
 
@@ -131,7 +135,7 @@ Use `timedatectl`(1) to ensure the system clock is synchronized:
 
 
 Linux hosts have two times to consider: **system time and RTC time**. RTC stands for *real-time clock*, which is a name for the system hardware clock.
-
+> [!NOTE]
 > The hardware clock runs continuously, even when the computer is turned off, *powered by the battery on the system motherboard*.
 
 The RTC’s primary function is to keep the time when a connection to a time server is not available. It is a simple quartz crystal oscillator (usually running at 32.768 kHz), often called a Real-Time Clock (RTC) or CMOS clock, powered by a small coin-cell battery.
@@ -148,10 +152,7 @@ The system time is the time known by the operating system. It is the time you se
 
 #### NTP Server Hierarchy
 
-The NTP server hierarchy is built in layers called **strata**. Each stratum is a layer of NTP servers. *The primary servers are at stratum 1*, and they are connected directly to various national time services at stratum 0 via satellite, radio, or even modems over phone lines in some cases.
-
-
-> Those time services at stratum 0 may be an **atomic clock**, a radio receiver that is tuned to the signals broadcast by an atomic clock, or a GPS receiver using the highly accurate clock signals broadcast by GPS satellites.
+The NTP server hierarchy is built in layers called **strata**. Each stratum is a layer of NTP servers. *The primary servers are at stratum 1*, and they are connected directly to various national time services at stratum 0 via satellite, radio, or even modems over phone lines in some cases.Those time services at stratum 0 may be an **atomic clock**.
 
 
 To prevent time requests from time servers lower in the hierarchy, that is, with a higher stratum number, from overwhelming the primary reference servers, there are several thousand public NTP stratum 2 servers that are open and available for all to use.
@@ -203,7 +204,8 @@ When enabled, set-ntp true enables and starts the first available network-time s
 
 ## Disk partitioning
 
-**todo: Understand LVM, btrfs and its snapshots and subvolumes. Also crypttab**
+todo: 
+- [ ] Understand LVM, btrfs and its snapshots and subvolumes. Also crypttab
 
 The minimum physical storage unit of a hard disk drive (HDD) is a sector.
 The solid state drive (SSD) equivalent is a page.
@@ -217,6 +219,7 @@ The EFI system partition (also called ESP) is an OS-independent partition format
 
 An ESP contains the boot loaders or kernel images of installed operating systems (which are typically contained in other partitions), device driver files for hardware devices present in a computer and used by the firmware at boot time, system utility programs that are intended to be run before an operating system is booted, and data files such as error logs.
 
+> [!CAUTION]
 > The EFI system partition must be a physical partition in the main partition table of the disk, not under LVM or software RAID etc.
 
 
@@ -226,7 +229,7 @@ UEFI provides *backward compatibility* with legacy systems by reserving the firs
 
 `fdisk`: Create a partition and use the t command to change its partition type to EFI System using the alias **uefi**.
 
-See also:
+###### See also:
 
 [Unified Extensible Firmware Interface - ArchWiki](https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#See_also)
 
@@ -248,7 +251,7 @@ and can decrypt in the same way for reads.
 
 Linux Unified Key Setup provides an efficient user-friendly way to store and manage keys. Without LUCKS, DM-Crypt can be more cumbersome and error prone.
 
-
+> [!NOTE]
 > You first create the encrypted volume, then open the volume, format the unlocked volume and mount it.
 
 
@@ -267,6 +270,7 @@ Specifying --type luks2 is optional on current `cryptsetup` versions because LUK
 | /dev/sda1  | The target partition to turn into a LUKS container                                             |
 
 
+> [!NOTE]
 > This command does not yet give you a usable filesystem. It produces an encrypted container. You then unlock it with a mapper name.
 
 
@@ -334,4 +338,22 @@ btrfs options in fstab
 | subvol=@        | Yes, if using subvolumes | Tells Btrfs which subvolume to mount as /. It is not a performance setting.                                                                                                                              |
 
 
-##### Further reading
+##### Btrfs subvolumes
+
+todo:
+- [ ] Explain btrfs not just creating subvolumes.
+
+> [!NOTE]
+> BTRFS has been part of the mainline Linux Kernel since 2009, which means it is maintained and patched as part of it.
+
+A subvolume is a independently mountable, logical portion of a file tree that behaves much like a physical block device or a distinct filesystem, despite sharing the same underlying storage pool.
+
+Because subvolumes share the same storage pool, directories like `/home` and `/var` can reside on the same physical device while remaining logically isolated.
+
+> [!IMPORTANT]
+>  This architecture allows you to apply unique mount options to each subvolume in your `/etc/fstab` file, treating them as if they were independent devices.
+
+Furthermore, **snapshots in Btrfs are simply a special type of subvolume**. Managing subvolumes is handled via the `btrfs subvolume` utility.
+
+> [!TIP]
+> btrfs subcommands can be abbreviated to any unique prefix. For example, `btrfs filesystem usage` is also accessible as `btrfs f u`.
