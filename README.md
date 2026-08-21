@@ -1,12 +1,11 @@
 # arch-installation
 
-Arch intallation guide for a working environment focus in cybersecurity
+Arch installation guide for a working environment focus in cybersecurity
 
 
 
-\*\*todo: Create a canvas and separate each header 2 into articles.\*\*
-
-
+**todo: Create a canvas and separate each header 2 into articles.**
+**todo: Create an index**
 
 
 
@@ -18,11 +17,11 @@ cat /etc/os-release
 
 
 
-\## Keyboard and fonts
+## Keyboard and fonts
 
 
 
-`localectl` controls the system \*\*locale\*\* and keyboard layout settings.
+`localectl` controls the system **locale** and keyboard layout settings.
 
 The default console keymap is en-US.
 
@@ -52,7 +51,7 @@ loadkeys de-latin1
 
 
 
-\#### Console fonts
+#### Console fonts
 
 
 
@@ -70,17 +69,14 @@ setfont ter-132b
 
 
 
-See also:
+###### See also:
 
 
 
-\[localectl(1) - Linux manual page](https://man7.org/linux/man-pages/man1/localectl.1.html)
+[localectl(1) - Linux manual page](https://man7.org/linux/man-pages/man1/localectl.1.html)
 
-\[loadkeys(1) — Arch manual pages](https://man.archlinux.org/man/loadkeys.1)
+[loadkeys(1) — Arch manual pages](https://man.archlinux.org/man/loadkeys.1)
 
-\[Linux console - ArchWiki](https://wiki.archlinux.org/title/Linux\_console#Fonts)
+[Linux console - ArchWiki](https://wiki.archlinux.org/title/Linux\_console#Fonts)
 
-\[setfont(8) — Arch manual pages](https://man.archlinux.org/man/setfont.8)
-
-
-
+[setfont(8) — Arch manual pages](https://man.archlinux.org/man/setfont.8)
