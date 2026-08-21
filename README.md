@@ -109,7 +109,7 @@ iwctl
 
 todo:
 - [ ] Really understand about stratum and how can date can affect TLS certificates.
-
+- [ ] Hardware clock
 
 ~~This is quite verbose, may I move it to the post-installation?.~~
 
@@ -183,6 +183,10 @@ timedatectl set-timezone Europe/Prague
 
 When enabled, set-ntp true enables and starts the first available network-time synchronization service. When disabled, it stops and disables recognized time-sync services.
 
+```bash
+ln -sf /usr/share/zoneinfo/Area/Location /etc/localtime
+hwclock --systohc
+```
 
 ###### See also:  
 
@@ -456,7 +460,80 @@ The last field is for the options separated by commas, refer to the manual to se
 ###### See also:
 
 [fstab - Wikipedia](https://en.wikipedia.org/wiki/Fstab)
+
 [fstab - ArchWiki](https://wiki.archlinux.org/title/Fstab)
+
+[genfstab(8) — Arch manual pages](https://man.archlinux.org/man/genfstab.8)
+
 [dm-crypt/System configuration - ArchWiki](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#Mounting_at_boot_time)
+
 [crypttab(5) - Linux manual page](https://www.man7.org/linux/man-pages/man5/crypttab.5.html)
+
 [systemd-cryptsetup-generator(8) — Arch manual pages](https://man.archlinux.org/man/systemd-cryptsetup-generator.8)
+
+[Security: Disk Encryption | Into the Terminal 66 - YouTube](https://www.youtube.com/watch?v=0DUpbAbup5o&t=797s)
+
+
+## Install essential packages
+
+Packages to be installed must be downloaded from **mirror servers**, which are defined in `/etc/pacman.d/mirrorlist`. The higher a mirror is placed in the list, the more priority it is given when downloading a package.
+
+On the live system, all HTTPS mirrors are enabled (i.e. uncommented). The topmost worldwide mirror should be fast enough for most people, but you may still want to inspect the file to see if it is satisfactory.
+
+No configuration (except for `/etc/pacman.d/mirrorlist`) gets carried over from the live environment to the installed system.
+> [!IMPORTANT]
+> The only mandatory package to install is *base*, which does not include all tools from the live installation, so installing more packages is frequently necessary.
+
+`pacstrap` is the primary tool for creating a new arch installation. It performs the following operations:
+
+- Creates the directory structure required for a functional Linux system
+- Mounts API filesystems (proc, sys, dev, etc.) into the target root
+- Handles pacman keyring initialization or copying from the host
+- Installs packages using pacman
+- Copies mirrorlist and optionally pacman configuration from the host
+
+`pacstrap` will be used to install packages to the specified new root directory, in this case `/mnt` for now.
+
+```bash
+pacstrap -K /mnt base linux linux-firmware
+```
+
+For example, the packages above for a basic installation with the Linux kernel and firmware for common hardware.
+
+> [!TIP]
+> This initial package selection in pacstrap only needs to include what is required for the system to boot; all other software can be installed or replaced post-installation.
+
+
+###### See also:
+
+[Mirrors - ArchWiki](https://wiki.archlinux.org/title/Mirrors)
+
+[pacstrap(8) — Arch manual pages](https://man.archlinux.org/man/pacstrap.8)
+
+[pacstrap | archlinux/arch-install-scripts | DeepWiki](https://deepwiki.com/archlinux/arch-install-scripts/2.3-pacstrap)
+
+## Chroot
+
+`chroot` stands for "change root". It is a system call that changes the root directory of the current running process and its children to a new location in the filesystem.
+
+A chroot environment is sometimes called a *jail*. This is because a process that runs inside a chroot environment is somewhat locked up: that process can access only files that are within the chroot hierarchy.
+
+When you run a command using `chroot`, the system redefines the meaning of any initial slashes (/) in pathnames to the new directory you specify. For that process, the designated path appears as the actual root directory, *preventing it from traversing or accessing files outside* or above that directory. This restricted environment is commonly referred to as a **chroot jail**.
+
+Usages:
+
+- Sandboxing and Isolation: It isolates untrusted applications or services (like web, mail, or DNS servers) so that if they are compromised, the attacker's access is restricted to that specific filesystem subtree.
+
+- User Containment: It restricts remote users (such as in SFTP or web-hosting environments) to their own designated directories.
+
+- System Recovery and Testing: It is used to perform system maintenance, run installer environments, or test new software without affecting the main system.
+
+```bash
+arch-chroot -S /mnt
+```
+
+[chroot - ArchWiki](https://wiki.archlinux.org/title/Chroot)
+
+[Chroot - Gentoo wiki](https://wiki.gentoo.org/wiki/Chroot)
+
+[BasicChroot - Community Help Wiki](https://help.ubuntu.com/community/BasicChroot)
