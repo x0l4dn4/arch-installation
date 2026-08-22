@@ -641,3 +641,23 @@ The `keyboard` hook needs to be placed before `autodetect` in order to be able t
 [Install Arch Linux on LVM - ArchWiki](https://wiki.archlinux.org/title/Install_Arch_Linux_on_LVM#Adding_mkinitcpio_hooks)
 
 
+## New user and root password
+
+Set a secure password for the `root` user to allow performing administrative actions.
+
+```bash
+passwd
+```
+
+Create a new user it is a good practice to not be root. (This can be done in the post-installation phase).
+
+```bash
+adduser -m user1
+passwd user1
+usermod -aG wheel,user1 user # Add to the user's group and wheel.
+```
+
+Then with `EDITOR=vim visudo` uncomment the line `%wheel ALL=(ALL:ALL) ALL` to allow members of group wheel to execute any command.
+
+
+
