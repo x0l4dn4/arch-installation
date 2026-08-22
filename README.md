@@ -191,7 +191,7 @@ When enabled, set-ntp true enables and starts the first available network-time s
 
 [Synchronize time using timedatectl and timesyncd - Ubuntu Server documentation](https://ubuntu.com/server/docs/how-to/networking/timedatectl-and-timesyncd/)
 
-[David Both - systemd for Linux SysAdmins - Chapter 6 Control Your Computer Time and Date with systemd](https://link.springer.com/book/10.1007/979-8-8688-1328-3)
+[David Both - systemd for Linux SysAdmins - Chapter 6 Control Your Computer Time and Date with systemd](https://link.springer.com/chapter/10.1007/979-8-8688-1328-3_6)
 
 
 ## Disk partitioning
