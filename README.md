@@ -120,6 +120,8 @@ todo:
 
 Use `timedatectl` to ensure the system clock is synchronized:
 
+> [!CAUTION]
+> Commands only affected the live ISO environment, not your installed system, later when chroot we must set the time again.
 
 Linux hosts have two times to consider: **system time and RTC time**. RTC stands for *real-time clock*, which is a name for the system hardware clock.
 > [!NOTE]
@@ -182,11 +184,6 @@ timedatectl set-timezone Europe/Prague
 
 
 When enabled, set-ntp true enables and starts the first available network-time synchronization service. When disabled, it stops and disables recognized time-sync services.
-
-```bash
-ln -sf /usr/share/zoneinfo/Area/Location /etc/localtime
-hwclock --systohc
-```
 
 ###### See also:  
 
@@ -495,7 +492,7 @@ No configuration (except for `/etc/pacman.d/mirrorlist`) gets carried over from 
 `pacstrap` will be used to install packages to the specified new root directory, in this case `/mnt` for now.
 
 ```bash
-pacstrap -K /mnt base linux linux-firmware
+pacstrap -K /mnt base linux linux-firmware # vim sudo
 ```
 
 For example, the packages above for a basic installation with the Linux kernel and firmware for common hardware.
@@ -537,3 +534,45 @@ arch-chroot -S /mnt
 [Chroot - Gentoo wiki](https://wiki.gentoo.org/wiki/Chroot)
 
 [BasicChroot - Community Help Wiki](https://help.ubuntu.com/community/BasicChroot)
+
+
+### Locale, time and hostname
+
+```bash
+ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
+hwclock --systohc # This sets the hardware clock from system clock.
+```
+
+
+
+To use the correct region and language specific formatting (like dates, currency, decimal separators), edit `/etc/locale.gen` and uncomment the UTF-8 locales you will be using. For example, `en_US.UTF-8 UTF-8`.
+
+ Generate the locales by running:
+
+```bash
+locale-gen
+```
+
+Create the `locale.conf` file, and set the `LANG` variable accordingly:
+
+```bash
+LANG=en_US.UTF-8
+```
+
+If you set the console keyboard layout, make the changes persistent in `vconsole.conf`.
+
+```bash
+KEYMAP=de-latin1
+```
+
+To assign a consistent, identifiable name to your system (particularly useful in a networked environment), create the hostname file `/etc/hostname`.
+Just add a string to the file to set the hostname.
+
+
+[hwclock(8) — Arch manual pages](https://man.archlinux.org/man/hwclock.8)
+
+[Locale - ArchWiki](https://wiki.archlinux.org/title/Locale)
+
+[Network configuration - ArchWiki](https://wiki.archlinux.org/title/Network_configuration#Set_the_hostname)
+
+
