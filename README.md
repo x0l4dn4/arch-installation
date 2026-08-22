@@ -659,5 +659,48 @@ usermod -aG wheel,user1 user # Add to the user's group and wheel.
 
 Then with `EDITOR=vim visudo` uncomment the line `%wheel ALL=(ALL:ALL) ALL` to allow members of group wheel to execute any command.
 
+###### See also:
+
+[Users and groups - ArchWiki](https://wiki.archlinux.org/title/Users_and_groups#User_management)
+
+
+## Install Grub
+
+A `boot loader` is a piece of software started by the firmware UEFI or BIOS. It is responsible for *loading the kernel* with the wanted kernel parameters and any external initramfs images.
+
+A `boot manager` presents a menu of boot options, or provides some other way to control the boot process.
+
+First, install the packages `grub` and `efibootmgr`: GRUB is the boot loader while efibootmgr is used by the GRUB installation script to write boot entries to NVRAM.
+
+```bash
+pacman -S grub efibootmgr
+```
+
+Then install grub in the /boot partition previously mounted. 
+
+```bash
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+```
+Then make the grub configuration, edit /etc/default/grub and add 
+
+```bash
+GRUB_CMDLINE_LINUX="root=/dev/vg0/root resume=/dev/vg0/swap" # For hibernation the swap
+```
+
+Then create the config file
+
+```bash
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+Then exit the chroot and reboot
+
+```bash
+exit
+umount -R /mnt #  this allows noticing any "busy" partitions.
+reboot
+```
+
+
 
 
