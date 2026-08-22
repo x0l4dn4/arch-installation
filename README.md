@@ -496,10 +496,10 @@ No configuration (except for `/etc/pacman.d/mirrorlist`) gets carried over from 
 `pacstrap` will be used to install packages to the specified new root directory, in this case `/mnt` for now.
 
 ```bash
-pacstrap -K /mnt base linux linux-firmware # vim sudo cryptsetup lvm2 btrfs-progs man
+pacstrap -K /mnt base linux linux-firmware vim sudo cryptsetup lvm2 btrfs-progs man networkmanager iwd git
 ```
 
-For example, the packages above for a basic installation with the Linux kernel and firmware for common hardware.
+For example, the packages above for a basic installation with the Linux kernel firmware for common hardware and some basic tools used later.
 
 > [!TIP]
 > This initial package selection in pacstrap only needs to include what is required for the system to boot; all other software can be installed or replaced post-installation.

@@ -14,13 +14,43 @@ cat /etc/os-release
 ```
 
 
+## Network configuration
 
-## Static IP
+`systemd-networkd` is a system daemon that manages network configurations. It detects and configures network devices as they appear; it can also create virtual network devices.
+
+```bash
+sudo systemctl enable --now systemd-networkd # Start it now an enable it to start at boot.
+```
+
+NetworkManager 
+
+```bash
+sudo systemctl enable --now networkmanager
+nmcli device wifi list
+nmcli device wifi connect 'SSID' password 'password'
+nmcli device status
+```
+When connected verify it will autoconnect after reboot.
+
+```bash
+nmcli -f connection.autoconnect connection show 'SSID'
+# connection.autoconnect: yes 
+```
+If it says `connection.autoconnect: no`, enable it.
+
+```bash
+sudo nmcli connection modify "SSID" connection.autoconnect yes
+```
+
+
+### Static IP
 
 To assign a persistent static IP and DNS using systemd, use `systemd-networkd` for the interface configuration and `systemd-resolved` for name resolution.
 
 
 ## Changing DNS
+
+`systemd-resolved` is a systemd service that provides network name resolution to local applications via a D-Bus interface
 
 The browser needs an IP address for `www.example.com`. It may first consult its own DNS cache; otherwise, it asks the operating system resolver.
 
