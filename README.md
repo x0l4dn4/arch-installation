@@ -5,7 +5,7 @@ Arch installation guide for a working environment focus in cybersecurity Encrypt
 For a post-installation guide see: [arch-installation/post-installation.md](https://github.com/x0l4dn4/arch-installation/blob/main/post-installation.md)
 
 > [!WARNING]
-> This guide is not completed yet. It is currently a draft.
+> The guide covers the full installation and can be used as is, though it's currently still a draft.
 
 
 todo:
@@ -468,6 +468,8 @@ The last field is for the options separated by commas, refer to the manual to se
 
 [crypttab(5) - Linux manual page](https://www.man7.org/linux/man-pages/man5/crypttab.5.html)
 
+[dm-crypt/System configuration - ArchWiki](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#crypttab)
+
 [systemd-cryptsetup-generator(8) — Arch manual pages](https://man.archlinux.org/man/systemd-cryptsetup-generator.8)
 
 [Security: Disk Encryption | Into the Terminal 66 - YouTube](https://www.youtube.com/watch?v=0DUpbAbup5o&t=797s)
@@ -684,7 +686,7 @@ grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 Then make the grub configuration, edit /etc/default/grub and add 
 
 ```bash
-GRUB_CMDLINE_LINUX="root=/dev/vg0/root resume=/dev/vg0/swap" # For hibernation the swap
+GRUB_CMDLINE_LINUX="root=/dev/vg0/root rootflags=subvol=@ resume=/dev/vg0/swap" # For hibernation the swap
 ```
 
 Then create the config file
@@ -701,6 +703,13 @@ umount -R /mnt #  this allows noticing any "busy" partitions.
 reboot
 ```
 
+###### See also:
 
+[Arch boot process - ArchWiki](https://wiki.archlinux.org/title/Arch_boot_process#Boot_loader)
+
+[Unified Extensible Firmware Interface - ArchWiki](https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface)
+
+
+Installation finished!
 
 
