@@ -1,6 +1,6 @@
 
 > [!WARNING]
-> This guide is currently a draft, not a complete guide.
+> This guide is not completed yet. It is currently a draft.
 
 todo:
 - [ ] Getting BlackArch repos

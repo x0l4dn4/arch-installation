@@ -5,7 +5,7 @@ Arch installation guide for a working environment focus in cybersecurity Encrypt
 For a post-installation guide see: [arch-installation/post-installation.md](https://github.com/x0l4dn4/arch-installation/blob/main/post-installation.md)
 
 > [!WARNING]
-> This guide is currently a draft, not a complete guide.
+> This guide is not completed yet. It is currently a draft.
 
 
 todo:
@@ -388,6 +388,8 @@ mount --mkdir /dev/sda1 /mnt/boot
 
 [LVM - ArchWiki](https://wiki.archlinux.org/title/LVM)
 
+[Install Arch Linux on LVM - ArchWiki](https://wiki.archlinux.org/title/Install_Arch_Linux_on_LVM)
+
 [Logical volume management guide - Tutonics](https://tutonics.com/articles/logical-volume-management-guide/)
 
 [Subvolumes — BTRFS documentation](https://btrfs.readthedocs.io/en/latest/Subvolumes.html)
@@ -492,7 +494,7 @@ No configuration (except for `/etc/pacman.d/mirrorlist`) gets carried over from 
 `pacstrap` will be used to install packages to the specified new root directory, in this case `/mnt` for now.
 
 ```bash
-pacstrap -K /mnt base linux linux-firmware # vim sudo
+pacstrap -K /mnt base linux linux-firmware # vim sudo cryptsetup lvm2 btrfs-progs man
 ```
 
 For example, the packages above for a basic installation with the Linux kernel and firmware for common hardware.
@@ -528,6 +530,8 @@ Usages:
 ```bash
 arch-chroot -S /mnt
 ```
+
+###### See also:
 
 [chroot - ArchWiki](https://wiki.archlinux.org/title/Chroot)
 
@@ -568,11 +572,72 @@ KEYMAP=de-latin1
 To assign a consistent, identifiable name to your system (particularly useful in a networked environment), create the hostname file `/etc/hostname`.
 Just add a string to the file to set the hostname.
 
+###### See also:
 
 [hwclock(8) — Arch manual pages](https://man.archlinux.org/man/hwclock.8)
 
 [Locale - ArchWiki](https://wiki.archlinux.org/title/Locale)
 
 [Network configuration - ArchWiki](https://wiki.archlinux.org/title/Network_configuration#Set_the_hostname)
+
+
+### initramfs
+
+The `initramfs` (short for initial RAM filesystem) is a temporary, minimal root filesystem that is loaded into RAM by the bootloader.
+
+> [!NOTE]
+> initramfs is a compressed **cpio** archive. **cpio** is an old Unix archive format like TAR and ZIP, but it is easier to decode and so requires less code in the kernel.
+
+
+To mount your real root filesystem (which resides on your hard drive, SSD, or network storage), the Linux kernel needs the appropriate driver modules (such as SCSI, RAID, or specific filesystem drivers like ext4 or btrfs).
+
+However, because the Linux kernel is modular, these drivers are typically stored as loadable module files on that very same root filesystem.
+
+If the kernel cannot read the disk without the drivers, and it cannot load the drivers because they are on the unmounted disk, the system cannot boot.
+
+`mkinitcpio` is a Bash script used to create `initramfs` images. The primary configuration file for mkinitcpio is `/etc/mkinitcpio.conf`
+
+> [!CAUTION]
+> Hooks are scripts that execute in the initial ramdisk. Some hooks that may be required for your system like lvm2, mdadm_udev, and encrypt are NOT enabled by default.
+
+#### Hooks
+
+The `HOOKS` array is the most important setting in the file. Hooks are small scripts describing what will be added to the initramfs image. Some hooks are accompanied by a so-called runtime hook providing startup functionality, such as starting a daemon, or assembling a stacked block device.
+
+Hooks are referred to by their name, and **executed in the order they are listed** in the `HOOKS` array of the configuration file. The recommended order of the hook list should be followed unless you know what you are doing.
+
+For LVM, You must have `lvm2` installed to use this. `lvm2` provides the *lvm2 hook*. If you are running `mkinitcpio` in an arch-chroot for a new installation, **lvm2 must be installed inside the arch-chroot** for `mkinitcpio` to find the lvm2 hook. 
+
+> [!CAUTION]
+> If lvm2 only exists outside the arch-chroot, mkinitcpio will output Error: Hook 'lvm2' cannot be found.
+
+In case your root filesystem is on LVM, you will need to enable the appropriate `mkinitcpio hooks`, otherwise your system might not boot.
+
+Enable: `systemd` and `lvm2` for the default systemd-based initramfs.
+
+Edit the file `/etc/mkinitcpio.conf` and insert lvm2 between block and filesystems:
+
+```bash
+HOOKS=(base systemd ... block lvm2 filesystems)
+```
+
+`dm_crypt` kernel module and the `cryptsetup` tool to the image. You must have `cryptsetup` installed to use this. Add `sd-encrypt` before `lvm2`.
+
+```bash
+HOOKS=(base systemd ... block sd-encrypt lvm2 filesystems)
+```
+
+The hook `sd-vconsole` provides support for non-US keymaps for typing encryption passwords; it must come before the encrypt hook, otherwise you will need to enter your encryption password using the default US keymap. Set your keymap in `/etc/vconsole.conf`.
+
+The `keyboard` hook needs to be placed before `autodetect` in order to be able to use the keyboard at boot time, for example to unlock an encrypted device when using the sd-encrypt hook.
+
+> [!IMPORTANT]
+> Remember to regenerate the initramfs after making any changes to `/etc/mkinitcpio.conf` using `mkinitcpio -P`
+
+###### See also:
+
+[mkinitcpio - ArchWiki](https://wiki.archlinux.org/title/Mkinitcpio#Hook_list)
+
+[Install Arch Linux on LVM - ArchWiki](https://wiki.archlinux.org/title/Install_Arch_Linux_on_LVM#Adding_mkinitcpio_hooks)
 
 
