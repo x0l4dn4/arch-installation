@@ -5,7 +5,7 @@ Arch installation guide for a working environment focus in cybersecurity Encrypt
 For a post-installation guide see: [arch-installation/post-installation.md](https://github.com/x0l4dn4/arch-installation/blob/main/post-installation.md)
 
 > [!WARNING]
-> The guide covers the full installation and can be used as is, though it's currently still a draft.
+> The guide covers the full installation and can be used as is, though it's currently still a draft. Note that these are my personal notes.
 
 
 todo:
