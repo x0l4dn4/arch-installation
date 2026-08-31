@@ -2,7 +2,13 @@
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
-PS1='[\u@\h \W]\$ '
+alias rm='rm -i'
+
+PS1='[\[\e[32m\]\u\[\e[0m\]@\[\e[31m\]\h\[\e[0m\] \W]\$ '
+# Nice response for ANSI colors https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+
+
 [ -z "$DISPLAY" ] && niri-session
 
 PATH=$PATH:$HOME/.local/bin
+
