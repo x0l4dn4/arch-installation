@@ -153,6 +153,14 @@ sudo pacman -Syu niri xwayland-satellite xdg-desktop-portal-gnome xdg-desktop-po
 
 systemctl --user add-wants niri.service dms
 ```
+Also, to install an application launcher
+
+```bash
+sudo pacman -S fuzzel
+```
+There is a shortcut to lunch `fuzzel` with Niri, `Mod + d`
+
+
 ###### See also
 
 [Alacritty Arch wiki](https://wiki.archlinux.org/title/Alacritty)
