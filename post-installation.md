@@ -314,3 +314,26 @@ sudo pacman -S blackarch-category
 
 
 
+### Clipboard
+
+The clipboard is used for a short-term data storage and data transfer via copy and paste operations.
+> [Warning]
+> In both Xorg and Wayland, the clipboard content is maintained by the program that copied it. If the program closes, the copied content becomes unavailable.
+ 
+To persist clipboard content, use a clipboard manager that maintains its own copy of the clipboard content. 
+
+```bash
+echo `$XDG_SESSION_TYPE`
+#x11 ->>  use `xclip`
+#wayland ->>  use `wl-copy`
+```
+
+```bash
+sudo pacman -S wl-clipboard
+alias c=wl-copy
+alias p=wl-baste
+```
+
+###### See also
+
+[Clipboard - ArchWiki] (https://wiki.archlinux.org/title/Clipboard)
