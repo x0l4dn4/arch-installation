@@ -58,6 +58,44 @@ tmux attach
 tmux attach -t name-session
 ```
 
+#### Killing sessions
+
+There are two ways to end a tmux session. First, you can attach to the session, stop all the programs within the session, and then type `exit` within a session.
+
+You can also kill off sessions with the`kill-session` command.
+
+```bash
+tmux kill-session -t name-session
+```
+
+#### Working with windows
+
+Windows are similar to tabs in terminal emulators.
+
+When you create a new tmux session, the environment sets up an initial window for you. You can create as many as you’d like, and they will persist when you detach and reattach from the session.
+
+```bash
+tmux new -s name-session -n name-initial-window
+```
+
+To create a window in a current session, press `Prefix + c`. Creating a window like this automatically brings the new window into focus. 
+
+To rename a window, press `Prefix + ,` and the status line changes, letting you rename the current window.
+
+##### Moving between windows
+
+When you only have two windows, you can quickly move between windows with `Prefix + n`, for “next window.” This cycles through the windows you have open. 
+
+ You can use `Prefix + p` to go to the previous window.
+
+By default, windows in `tmux` each have a number, starting at 0. You can quickly jump to the first window with `Prefix + 0`, and the second window with `Prefix + 1`.
+
+To close a window, you can either type `exit` into the prompt in the window, or you can use `Prefix+ &`, which displays a confirmation message in the status bar before killing off the window.
+
+If you accept, your previous window comes into focus. To completely close out the tmux session, you have to close all the windows in the session.
+
+
+
 #### See also:
 
 https://pragprog.com/titles/bhtmux3/tmux-3/
