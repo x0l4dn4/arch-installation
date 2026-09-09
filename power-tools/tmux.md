@@ -94,6 +94,16 @@ To close a window, you can either type `exit` into the prompt in the window, or 
 
 If you accept, your previous window comes into focus. To completely close out the tmux session, you have to close all the windows in the session.
 
+#### Working with panes
+
+You can divide a window into panes so you can run multiple programs at once.
+
+To divide down the middle of the window press `Prefix + %`
+Press `Prefix + "` to split a pane in half horizontally.
+
+To cycle through the panes, press `Prefix + o`. You can also use `Prefix`, followed by the `Up`, `Down`, `Left`, or `Right` keys to move around the panes. 
+
+You close a pane the same way you exit a terminal session or a tmux window: you type `exit` in the pane. You can also kill a pane with `Prefix + x`, which also closes the window if there’s only one pane in that window.
 
 
 #### See also:
