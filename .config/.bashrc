@@ -5,6 +5,7 @@ alias grep='grep --color=auto'
 alias rm='rm -i'
 alias p=wl-paste
 alias c='wl-copy -n'
+alias sp='spotify-launcher'
 
 PS1='[\[\e[32m\]\u\[\e[0m\]@\[\e[31m\]\h\[\e[0m\] \W]\$ '
 # Nice response for ANSI colors https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
