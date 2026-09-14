@@ -136,8 +136,7 @@ Unlike X, Wayland is significantly **decentralized** by design. There’s no lar
 
 Instead, each client gets its own memory buffer (think of this as sort of a **sub-framebuffer**) for its own window, and a piece of software called a `compositor` *combines all of the clients’ buffers* into the necessary form for copying to the screen’s framebuffer.
 
-
-
+Wayland is just the protocol, unlike Xorg it does not have a common "display server" to install. To use it, *you only need a compatible* display driver and a compositor or desktop environment (e.g. GNOME or Plasma) that implements the Wayland protocol. 
 
 ###### See also
 
