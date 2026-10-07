@@ -60,7 +60,6 @@ The browser needs an IP address for `www.example.com`. It may first consult its 
 
 On Linux, the resolver normally follows the **hosts: order** in `/etc/nsswitch.conf`
 
-
 ```bash
 passwd:files
 shadow:files
@@ -96,14 +95,33 @@ As its name implies, the nsswitch, short for **Name Service Switch** is used to 
 The systemd-resolved.service provides name resolution services 
 
 
+```bash
 sudo resolvectl dns enp3s0 1.1.1.1 1.0.0.1
 sudo resolvectl domain enp3s0 '~.'
+```
+
+To modify a connection managed by *NetworkManager*
+
+```bash
+# connectionName can be found using the command nmcli con
+
+# If you are getting the DNS by DHCP it must be excluded
+nmcli con mod connectionName ipv4.ignore-auto-dns yes
+
+nmcli con mod "connectionName" ipv4.dns "8.8.8.8 8.8.4.4"
+
+systemctl restart NetworkMananager
+
+# Verify checking /etc/resolv.conf
+```
 
 ###### See also:
 
 [David Both - systemd for Linux SysAdmins - Chapter 12 Using systemd-resolved Name Service](https://link.springer.com/chapter/10.1007/979-8-8688-1328-3_12)
 
 [systemd.service — Service unit configuration](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html)
+
+[How to manage DNS in NetworkManager via console nmcli - ServerFault](https://serverfault.com/questions/810636/how-to-manage-dns-in-networkmanager-via-console-nmcli)
 
 
 ## Desktop
