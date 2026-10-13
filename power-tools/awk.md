@@ -53,6 +53,9 @@ Thus, there must be as many `%` specifications in format as values to be printed
 
 > The `printf` statement is almost the same as the printf function in the standard C library.)
 
+------
+
+
 ## Examples
 
 ```bash
