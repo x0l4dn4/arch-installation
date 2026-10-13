@@ -20,6 +20,21 @@ Then the next line is read and the matching starts over. This continues until al
 
 If there is an action with no pattern, for example,`{ print $1 }` then the action, in this case printing the first field, is performed for every input line.
 
+The first field in the current input line is called $1, the second $2, and so forth.
+
+> The entire line is called $0.
+
+Awk counts the **number of fields** in the current input line and stores the count in a built-in variable called `NF`
+
+Awk provides another built-in variable, called `NR`, that counts the **number of lines** (**records**) read so far.
+
+You can also print words in the midst of fields and computed values, by including quoted strings of characters in the list.
+
+```bash
+awk '{ print "Name: ", $1, "salary", $2 * $3 }' data.txt
+```
+In the `print` statement, the text inside the double quotes is printed along with the fields and computed values.
+
 ## Examples
 
 ```bash
@@ -31,3 +46,11 @@ awk '$3 > 0 { print $1, $2 * $3 }' data.txt
 awk '$3 == 0 { print $1 }' data.txt
 # If 3 column is 0 print the first column
 ```
+
+```bash
+awk { print NF, $1, $NF } data.txt
+
+# Prints the number of fields and the first and last fields of each input line.
+```
+
+
