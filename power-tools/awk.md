@@ -35,6 +35,24 @@ awk '{ print "Name: ", $1, "salary", $2 * $3 }' data.txt
 ```
 In the `print` statement, the text inside the double quotes is printed along with the fields and computed values.
 
+## Formatting output 
+
+The `print` statement is meant for quick and easy output. To format the output exactly the way you want it, you may have to use the `printf` statement. 
+
+```bash
+printf( format, value1, value2, ...)
+```
+
+The format is a string that contains text to be printed verbatim, interspersed with specifications of how each of the values is to be printed.
+
+A specification is a `%` followed by a few characters that control the format of a value.
+
+The first specification tells how value1 is to be printed, the second how value2 is to be printed, and so on.
+
+Thus, there must be as many `%` specifications in format as values to be printed.
+
+> The `printf` statement is almost the same as the printf function in the standard C library.)
+
 ## Examples
 
 ```bash
@@ -49,8 +67,11 @@ awk '$3 == 0 { print $1 }' data.txt
 
 ```bash
 awk { print NF, $1, $NF } data.txt
-
 # Prints the number of fields and the first and last fields of each input line.
 ```
 
 
+```bash
+awk '{printf ("%s: %s\n", "Name", $1)}' ~/awk/test
+# Prints Name followed by a semicolon and the first column of the input file
+```
