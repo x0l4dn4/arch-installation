@@ -53,6 +53,17 @@ Thus, there must be as many `%` specifications in format as values to be printed
 
 > The `printf` statement is almost the same as the printf function in the standard C library.)
 
+## BEGIN and END
+
+The special pattern `BEGIN` matches before the first line of the first input file is read, and `END` matches after the last line of the last file has been processed.
+
+```bash
+BEGIN { print "NAME AGE SALARY"}
+      { print $0}
+```
+
+
+
 ------
 
 
