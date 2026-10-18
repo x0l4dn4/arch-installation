@@ -370,3 +370,15 @@ The closest equivalent to `apt purge` are the options `Rns`
 
 ```bash
 pacman -Rns package
+```
+
+### Firefox
+
+#### Troubleshooting Firefox
+
+```bash
+about:processes
+about:memory
+```
+
+

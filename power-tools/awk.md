@@ -35,9 +35,12 @@ awk '{ print "Name: ", $1, "salary", $2 * $3 }' data.txt
 ```
 In the `print` statement, the text inside the double quotes is printed along with the fields and computed values.
 
+> The braces surround a series of one or more statements that are applied to the same adress
+
+
 ## Formatting output 
 
-The `print` statement is meant for quick and easy output. To format the output exactly the way you want it, you may have to use the `printf` statement. 
+The `print` statement (awk is modeled on the c language) is meant for quick and easy output. To format the output exactly the way you want it, you may have to use the `printf` statement. 
 
 ```bash
 printf( format, value1, value2, ...)
