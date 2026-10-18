@@ -61,10 +61,6 @@ setfont ter-132b
 
 ## Connect to the Internet
 
-
-todo:
-- [ ] How to configure static IP address and DNS servers post-installation
-
 Wi-Fi—authenticate to the wireless network using `iwctl`.
 
 `iwd` automatically stores network passphrases in the `/var/lib/iwd/ssid.psk` directory and uses them to *auto-connect* in the future. 
@@ -93,10 +89,7 @@ iwctl
 
 [iwd] station name connect-hidden SSID
 
-
 ```
-
-
 
 ###### See also:
 
@@ -196,12 +189,8 @@ When enabled, set-ntp true enables and starts the first available network-time s
 
 ## Disk partitioning
 
-todo: 
-- [ ] Understand LVM, btrfs and its snapshots and subvolumes. Also crypttab
-
 The minimum physical storage unit of a hard disk drive (HDD) is a sector.
 The solid state drive (SSD) equivalent is a page.
-
 
 Software and documentation may sometimes refer to "sectors" and "blocks" interchangeably, regardless of the storage type.
 

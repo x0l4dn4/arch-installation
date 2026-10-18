@@ -3,13 +3,10 @@
 > This guide is not completed yet. It is currently a draft.
 
 todo:
-- [ ] Getting BlackArch repos
 - [ ] Undertand timeshift for snapshots
 - [ ] Package management, dependencies broken
 - [ ] Build from source
 - [ ] Paru 
-- [ ] Setting manual IP and DNS servers
-
 
 ```bash
 
@@ -354,3 +351,22 @@ alias p=wl-baste
 ###### See also
 
 [Clipboard - ArchWiki] (https://wiki.archlinux.org/title/Clipboard)
+
+
+
+### Pacman and Paru
+
+
+#### Purge installed packages
+
+The closest equivalent to `apt purge` are the options `Rns` 
+
+- `-R`: Remove the package.
+
+- `-n`: Don't save modified configuration files.
+
+- `-s`: Also remove dependencies that are no longer needed.
+ 
+
+```bash
+pacman -Rns package

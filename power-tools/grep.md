@@ -13,3 +13,9 @@ grep 'david' students
 
 It will print **all the lines** that contains the regular expression _david_. Hence, the `g` of global in the name.
 
+
+
+## Further reading
+
+[Line adressing ed manual - GNU](https://www.gnu.org/software/ed/manual/ed_manual.html#Line-addressing)
+
